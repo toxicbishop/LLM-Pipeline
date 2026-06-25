@@ -31,4 +31,6 @@ A premium, glassmorphic Flask application with high-end aesthetics and interacti
 | `/album` | `GET` | Returns high-quality media album metadata. |
 
 ---
-Built with <i class="fa-solid fa-heart" style="color: #ef4444;"></i> by Antigravity.
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
