@@ -35,6 +35,11 @@ jobs:
             echo "requirements.txt not found — skipping install"
           fi
 
+      - name: Lint code
+        run: |
+          pip install flake8
+          flake8 app.py --max-line-length=100
+
       - name: Run tests (if present)
         run: |
           # Run pytest only if there are tests / pytest config files
