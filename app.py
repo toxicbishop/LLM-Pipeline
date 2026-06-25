@@ -1,7 +1,7 @@
 import os
 import time
 import requests
-from flask import Flask, jsonify, request, Response, stream_with_context
+from flask import Flask, jsonify, request, Response, stream_with_context, render_template
 from flask_cors import CORS
 from flask_caching import Cache
 from dotenv import load_dotenv
@@ -38,6 +38,11 @@ def fetch_from_placeholder(endpoint):
         return {"error": str(e)}, 502
     except Exception:
         return {"error": "internal server error"}, 500
+
+
+@app.route('/')
+def index():
+    return render_template('index.html')
 
 
 @app.route('/health')
