@@ -16,18 +16,49 @@ A premium, glassmorphic Flask application with high-end aesthetics and interacti
 
 ## Quick Start
 
-1. **Install Dependencies**:
-   ```bash
-   pip install flask flask-cors
-   ```
+### 1. Set Up Virtual Environment
 
-2. **Run the Application**:
-   ```bash
-   python app.py
-   ```
+To isolate the dependencies, create and activate a virtual environment:
 
-3. **Access the Dashboard**:
-   Open [http://127.0.0.1:5000](http://127.0.0.1:5000) in your browser.
+#### Windows (PowerShell)
+If you encounter script execution restrictions, set the Execution Policy:
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
+```
+Then create and activate the environment:
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+```
+
+#### Windows (CMD)
+```cmd
+python -m venv .venv
+.\.venv\Scripts\activate.bat
+```
+
+#### macOS / Linux
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+### 2. Install & Upgrade Dependencies
+
+With the virtual environment active, upgrade `pip` and install the package requirements:
+```bash
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+### 3. Run the Application
+
+```bash
+python app.py
+```
+
+### 4. Access the Dashboard
+Open [http://127.0.0.1:5000](http://127.0.0.1:5000) in your web browser.
 
 ## API Specification
 
