@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLM Pipeline Dashboard | Flask API</title>
+    <meta name="description" content="A high-performance Flask API dashboard for managing posts, comments, and albums with real-time feedback and premium interface design.">
+    <!-- Header Font & Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>LLM Pipeline</h1>
+            <p class="subtitle">Premium API Interface & Endpoint Monitoring</p>
+        </header>
+
+        <main class="grid">
+            <!-- Posts Card -->
+            <div class="card animate-up" onclick="fetchData('/post', 'posts-preview')" style="animation-delay: 0.1s;">
+                <span class="endpoint-tag">GET /post</span>
+                <h2><i class="fa-solid fa-newspaper"></i> Articles & Posts</h2>
+                <p>Access curated content across various domains. Features full-text search and metadata.</p>
+                <div id="posts-preview" class="data-preview">Click to load data...</div>
+            </div>
+
+            <!-- Comments Card -->
+            <div class="card animate-up" onclick="fetchData('/comment', 'comments-preview')" style="animation-delay: 0.2s;">
+                <span class="endpoint-tag">GET /comment</span>
+                <h2><i class="fa-solid fa-comments"></i> User Discussions</h2>
+                <p>Engage with live feedback and discussions linked directly to your published content.</p>
+                <div id="comments-preview" class="data-preview">Click to load data...</div>
+            </div>
+
+            <!-- Albums Card -->
+            <div class="card animate-up" onclick="fetchData('/album', 'albums-preview')" style="animation-delay: 0.3s;">
+                <span class="endpoint-tag">GET /album</span>
+                <h2><i class="fa-solid fa-images"></i> Media Albums</h2>
+                <p>Explore high-resolution galleries and categorized photo collections from global artists.</p>
+                <div id="albums-preview" class="data-preview">Click to load data...</div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        async function fetchData(endpoint, targetId) {
+            const preview = document.getElementById(targetId);
+            try {
+                preview.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Fetching...';
+                const response = await fetch(endpoint);
+                const result = await response.json();
+                
+                // Pretty print the JSON
+                preview.textContent = JSON.stringify(result.data, null, 2);
+            } catch (error) {
+                preview.innerHTML = '<span style="color: #ef4444;"><i class="fa-solid fa-triangle-exclamation"></i> Error fetching.</span>';
+                console.error('Fetch error:', error);
+            }
+        }
+    </script>
+</body>
+</html>
