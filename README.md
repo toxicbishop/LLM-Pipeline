@@ -2,71 +2,74 @@
 
 ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)
 ![Flask](https://img.shields.io/badge/Flask-000000?logo=flask&logoColor=white)
-![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)
-![CSS3](https://img.shields.io/badge/CSS3-1572B6?logo=css3&logoColor=white)
-![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black)
-![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
+![Redis](https://img.shields.io/badge/redis-%23DD0031.svg?logo=redis&logoColor=white)
+![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?logo=docker&logoColor=white)
+![OpenAI](https://img.shields.io/badge/OpenAI-%23412991.svg?logo=openai&logoColor=white)
 
-A premium, glassmorphic Flask application with high-end aesthetics and interactive data monitoring.
+A premium, glassmorphic Flask application integrating LLM capabilities (streaming and summarization) with high-end aesthetics and interactive data monitoring.
 
 ## Features
-- **Dynamic Endpoints**: Seamlessly handles `/post`, `/comment`, and `/album`.
+- **LLM Endpoints**: Talk to OpenAI with `/generate` (streaming) and `/summarize`.
+- **Redis Caching**: Faster responses for data endpoints using `flask-caching`.
+- **Dynamic Endpoints**: Seamlessly handles `/posts`, `/comments`, and `/albums`.
 - **Glassmorphic UI**: Beautiful, interactive dashboard using modern CSS.
-- **RESTful Architecture**: Clean JSON responses for all API calls.
+- **RESTful Architecture**: Clean JSON responses for all API calls with proper error handling.
 
 ## Quick Start
 
-### 1. Set Up Virtual Environment
-
-To isolate the dependencies, create and activate a virtual environment:
-
-#### Windows (PowerShell)
-If you encounter script execution restrictions, set the Execution Policy:
-```powershell
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
-```
-Then create and activate the environment:
-```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
+### 1. Environment Variables
+Create a `.env` file in the root directory (you can use `.env.example` as a template):
+```env
+FLASK_DEBUG=false
+OPENAI_API_KEY=sk-your-openai-api-key
+REDIS_HOST=localhost
+REDIS_PORT=6379
+REDIS_URL=redis://localhost:6379/0
 ```
 
-#### Windows (CMD)
-```cmd
-python -m venv .venv
-.\.venv\Scripts\activate.bat
-```
-
-#### macOS / Linux
+### 2. Run with Docker (Recommended)
+You can spin up the web app and a Redis container with one command:
 ```bash
-python3 -m venv .venv
+docker-compose up --build
+```
+Access the dashboard at [http://localhost:5000](http://localhost:5000)
+
+### 3. Run Locally (Manual)
+
+#### Set Up Virtual Environment
+```bash
+python -m venv .venv
+# Windows (PowerShell)
+.\.venv\Scripts\Activate.ps1
+# macOS / Linux
 source .venv/bin/activate
 ```
 
-### 2. Install & Upgrade Dependencies
-
-With the virtual environment active, upgrade `pip` and install the package requirements:
+#### Install Dependencies
 ```bash
 python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-### 3. Run the Application
+#### Run Redis
+Make sure you have a local Redis server running on port `6379`.
 
+#### Run the Application
 ```bash
 python app.py
 ```
-
-### 4. Access the Dashboard
 Open [http://127.0.0.1:5000](http://127.0.0.1:5000) in your web browser.
 
 ## API Specification
 
 | Endpoint | Method | Description |
 |---|---|---|
-| `/post` | `GET` | Fetches a list of premium articles and posts. |
-| `/comment` | `GET` | Retrieves user discussions and feedback data. |
-| `/album` | `GET` | Returns high-quality media album metadata. |
+| `/generate` | `POST` | Takes `{"prompt": "..."}` and streams back an LLM response. |
+| `/summarize` | `POST` | Takes `{"text": "..."}` and returns a concise summary. |
+| `/posts` | `GET` | Fetches a list of premium articles and posts (Cached). |
+| `/comments` | `GET` | Retrieves user discussions and feedback data (Cached). |
+| `/albums` | `GET` | Returns high-quality media album metadata (Cached). |
+| `/health` | `GET` | API health check endpoint. |
 
 ---
 ## License
