@@ -34,8 +34,8 @@ def fetch_from_placeholder(endpoint):
         return response.json()
     except requests.Timeout:
         return {"error": "upstream timeout"}, 504
-    except requests.HTTPError as e:
-        return {"error": str(e)}, 502
+    except requests.HTTPError:
+        return {"error": "upstream error"}, 502
     except Exception:
         return {"error": "internal server error"}, 500
 
@@ -124,8 +124,8 @@ def generate():
             yield "data: [DONE]\n\n"
 
         return Response(stream_with_context(generate_stream()), mimetype='text/event-stream')
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+    except Exception:
+        return jsonify({"error": "internal server error"}), 500
 
 
 @app.route('/summarize', methods=['POST'])
@@ -149,8 +149,8 @@ def summarize():
             ]
         )
         return jsonify({"summary": response.choices[0].message.content})
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+    except Exception:
+        return jsonify({"error": "internal server error"}), 500
 
 
 if __name__ == '__main__':
