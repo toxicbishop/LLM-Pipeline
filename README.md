@@ -6,9 +6,12 @@
 ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?logo=docker&logoColor=white)
 ![OpenAI](https://img.shields.io/badge/OpenAI-%23412991.svg?logo=openai&logoColor=white)
 
-![System Architecture](assets/LLM-Pipeline%20—%20System%20Architecture.png)
-
 A premium, glassmorphic Flask application integrating LLM capabilities (streaming and summarization) with high-end aesthetics and interactive data monitoring.
+
+## System Architecture
+This diagram outlines the core data flow, illustrating how client requests are processed through the Flask backend and Redis cache, seamlessly integrating with the LLM API.
+
+![System Architecture](assets/LLM-Pipeline%20—%20System%20Architecture.png)
 
 ## Features
 - **LLM Endpoints**: Talk to OpenAI with `/generate` (streaming) and `/summarize`.
