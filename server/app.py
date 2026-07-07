@@ -1,16 +1,21 @@
 import os
 import time
-import requests # type: ignore
-from flask import Flask, jsonify, request, Response, stream_with_context, render_template # type: ignore
-from flask_cors import CORS # type: ignore
-from flask_caching import Cache # type: ignore
-from dotenv import load_dotenv # type: ignore
-from openai import OpenAI # type: ignore
+import requests  # type: ignore
+from flask import Flask, jsonify, request, Response, stream_with_context  # type: ignore
+from flask_cors import CORS  # type: ignore
+from flask_caching import Cache  # type: ignore
+from dotenv import load_dotenv  # type: ignore
+from openai import OpenAI  # type: ignore
+
+from middleware import security_middleware
 
 load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
+
+# Register security middleware
+app.before_request(security_middleware)
 
 # Configure Redis Cache
 cache = Cache(config={
@@ -22,8 +27,10 @@ cache = Cache(config={
 })
 cache.init_app(app)
 
-# Initialize OpenAI Client
-client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+# Initialize OpenAI Client (lazily — constructing this eagerly with no key
+# raises immediately and prevents the app from booting at all, which defeats
+# the stub-response fallback used elsewhere in this file when no key is set).
+client = OpenAI(api_key=os.getenv('OPENAI_API_KEY')) if os.getenv('OPENAI_API_KEY') else None
 
 
 def fetch_from_placeholder(endpoint):
@@ -42,7 +49,14 @@ def fetch_from_placeholder(endpoint):
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    # API-only now — the frontend lives in ../frontend (Vite dev server in dev,
+    # static build served separately or via nginx in prod). This route just
+    # confirms the API is alive; it no longer renders a template.
+    return jsonify({
+        "service": "llm-pipeline-api",
+        "status": "ok",
+        "endpoints": ["/health", "/posts", "/comments", "/albums", "/generate", "/summarize"]
+    })
 
 
 @app.route('/health')
@@ -100,7 +114,7 @@ def generate():
 
     prompt = data['prompt']
 
-    if not os.getenv('OPENAI_API_KEY'):
+    if client is None:
         # Stub response if no API key is set
         def generate_stub():
             msg = f"Stub response for: '{prompt}'. Please set OPENAI_API_KEY for real responses."
@@ -112,20 +126,26 @@ def generate():
         return Response(stream_with_context(generate_stub()), mimetype='text/event-stream')
 
     try:
+        stream = client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[{"role": "user", "content": prompt}],
+            stream=True,
+        )
+        
         def generate_stream():
-            stream = client.chat.completions.create(
-                model="gpt-4o-mini",
-                messages=[{"role": "user", "content": prompt}],
-                stream=True,
-            )
-            for chunk in stream:
-                if chunk.choices[0].delta.content is not None:
-                    yield f"data: {chunk.choices[0].delta.content}\n\n"
-            yield "data: [DONE]\n\n"
+            try:
+                for chunk in stream:
+                    if chunk.choices[0].delta.content is not None:
+                        yield f"data: {chunk.choices[0].delta.content}\n\n"
+                yield "data: [DONE]\n\n"
+            except Exception as e:
+                app.logger.error(f"Streaming error: {e}")
+                yield "data: [ERROR] An internal error occurred during generation.\n\n"
 
         return Response(stream_with_context(generate_stream()), mimetype='text/event-stream')
-    except Exception:
-        return jsonify({"error": "internal server error"}), 500
+    except Exception as e:
+        app.logger.error(f"Generate error: {e}")
+        return jsonify({"error": "An internal server error occurred."}), 500
 
 
 @app.route('/summarize', methods=['POST'])
@@ -136,7 +156,7 @@ def summarize():
 
     text = data['text']
 
-    if not os.getenv('OPENAI_API_KEY'):
+    if client is None:
         return jsonify({"summary": f"Stub summary for: {text[:20]}..."})
 
     try:
@@ -149,8 +169,9 @@ def summarize():
             ]
         )
         return jsonify({"summary": response.choices[0].message.content})
-    except Exception:
-        return jsonify({"error": "internal server error"}), 500
+    except Exception as e:
+        app.logger.error(f"Summarize error: {e}")
+        return jsonify({"error": "An internal server error occurred."}), 500
 
 
 if __name__ == '__main__':

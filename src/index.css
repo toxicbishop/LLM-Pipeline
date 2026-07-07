@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  background-color: #0a0a0f;
+  color: #e5e5e5;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.bento-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-rows: minmax(180px, auto) minmax(140px, auto);
+  grid-template-areas:
+    'generate generate generate summarize summarize summarize'
+    'generate generate generate posts     comments  albums';
+}
+
+@media (max-width: 767px) {
+  .bento-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
+    grid-template-areas:
+      'generate'
+      'summarize'
+      'posts'
+      'comments'
+      'albums';
+  }
+}
+
+.area-generate { grid-area: generate; }
+.area-summarize { grid-area: summarize; }
+.area-posts { grid-area: posts; }
+.area-comments { grid-area: comments; }
+.area-albums { grid-area: albums; }
