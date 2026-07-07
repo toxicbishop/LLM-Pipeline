@@ -1,8 +1,0 @@
-flask
-flask-cors
-requests
-openai
-flask-caching
-redis
-python-dotenv
-gunicorn
