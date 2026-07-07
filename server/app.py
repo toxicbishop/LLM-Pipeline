@@ -139,11 +139,13 @@ def generate():
                         yield f"data: {chunk.choices[0].delta.content}\n\n"
                 yield "data: [DONE]\n\n"
             except Exception as e:
-                yield f"data: [ERROR] {str(e)}\n\n"
+                app.logger.error(f"Streaming error: {e}")
+                yield "data: [ERROR] An internal error occurred during generation.\n\n"
 
         return Response(stream_with_context(generate_stream()), mimetype='text/event-stream')
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        app.logger.error(f"Generate error: {e}")
+        return jsonify({"error": "An internal server error occurred."}), 500
 
 
 @app.route('/summarize', methods=['POST'])
@@ -168,7 +170,8 @@ def summarize():
         )
         return jsonify({"summary": response.choices[0].message.content})
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        app.logger.error(f"Summarize error: {e}")
+        return jsonify({"error": "An internal server error occurred."}), 500
 
 
 if __name__ == '__main__':
