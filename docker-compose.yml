@@ -1,8 +1,21 @@
 version: '3.8'
 
 services:
-  web:
-    build: .
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_BASE_URL=http://localhost:5000
+    depends_on:
+      - server
+
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
     ports:
       - "5000:5000"
     environment:
@@ -10,9 +23,8 @@ services:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - REDIS_URL=redis://redis:6379/0
-      # - OPENAI_API_KEY=your_api_key_here # Uncomment and add your key or use .env
     env_file:
-      - .env
+      - ./server/.env
     depends_on:
       - redis
 
