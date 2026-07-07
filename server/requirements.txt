@@ -1,0 +1,7 @@
+flask
+flask-cors
+flask-caching
+redis
+requests
+python-dotenv
+openai
