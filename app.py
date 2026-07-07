@@ -1,11 +1,11 @@
 import os
 import time
-import requests
-from flask import Flask, jsonify, request, Response, stream_with_context, render_template
-from flask_cors import CORS
-from flask_caching import Cache
-from dotenv import load_dotenv
-from openai import OpenAI
+import requests # type: ignore
+from flask import Flask, jsonify, request, Response, stream_with_context, render_template # type: ignore
+from flask_cors import CORS # type: ignore
+from flask_caching import Cache # type: ignore
+from dotenv import load_dotenv # type: ignore
+from openai import OpenAI # type: ignore
 
 load_dotenv()
 
